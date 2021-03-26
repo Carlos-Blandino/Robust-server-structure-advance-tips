@@ -2,7 +2,7 @@ const path = require("path");
 const notes = require(path.resolve("src/data/notes-data"));
 
 function create(req, res) {
-  const { data: { text } = {} } = req.body;
+  const text = res.locals.text;//const { data: { text } = {} } = req.body;
   const newNote = {
     id: notes.length + 1,
     text,
@@ -24,19 +24,16 @@ function hasText(req, res, next) {
   const { data: { text } = {} } = req.body;
 
   if (text) {
+    res.locals.text = text;
     return next();
   }
   next({ status: 400, message: "A 'text' property is required." });
 }
-
-function list(req, res) {
-  res.json({ data: notes });
-}
-
 function noteExists(req, res, next) {
   const noteId = Number(req.params.noteId);
   const foundNote = notes.find((note) => note.id === noteId);
   if (foundNote) {
+    res.locals.note = foundNote;
     return next();
   }
   next({
@@ -45,17 +42,22 @@ function noteExists(req, res, next) {
   });
 }
 
+function list(req, res) {
+  res.json({ data: notes });
+}
+
+
 function read(req, res) {
   const noteId = Number(req.params.noteId);
-  const foundNote = notes.find((note) => (note.id = noteId));
+  const foundNote = res.locals.note //notes.find((note) => (note.id = noteId));
   res.json({ data: foundNote });
 }
 
 function update(req, res) {
   const noteId = Number(req.params.noteId);
-  const foundNote = notes.find((note) => note.id === noteId);
+  const foundNote = res.locals.note;// notes.find((note) => note.id === noteId);
 
-  const { data: { text } = {} } = req.body;
+  const text = res.locals.text;//const { data: { text } = {} } = req.body;
 
   foundNote.text = text;
 
