@@ -43,6 +43,8 @@ function noteExists(req, res, next) {
 }
 
 function list(req, res) {
+  const {noteId} = req.params ;
+  
   res.json({ data: notes });
 }
 
@@ -69,5 +71,6 @@ module.exports = {
   list,
   read: [noteExists, read],
   update: [noteExists, hasText, update],
-  delete: destroy,
+  delete: [destroy],
+  noteExists,
 };
